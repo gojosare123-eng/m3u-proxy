@@ -2,7 +2,7 @@
 cat > api/mac/playlist.m3u.js << 'EOF'
 export default async function handler(req, res) {
   try {
-    const base = 'http://livebox.pro:80/c/';
+    const base = 'http://livebox.pro:80';
     const user = '112233';
     const pass = '332211';
 
