@@ -1,6 +1,7 @@
+cat > vercel.json << 'EOF'
 {
   "rewrites": [
-    { "source": "/api/mac/playlist.m3u", "destination": "/api/mac/playlist" },
-    { "source": "/stream", "destination": "/api/stream" }
+    { "source": "/api/mac/playlist.m3u", "destination": "/api/mac/playlist" }
   ]
 }
+EOF
