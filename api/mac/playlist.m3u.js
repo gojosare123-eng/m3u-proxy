@@ -1,11 +1,37 @@
-import fetch from 'node-fetch';
+
+cat > api/mac/playlist.m3u.js << 'EOF'
 export default async function handler(req, res) {
   try {
-    const resp = await fetch('http://4kgood.org/get.php?username=9680723188&password=kyft6ks0g7gr7uw0xio6&type=m3u_plus&output=ts', { headers: { 'User-Agent': 'Mozilla/5.0' } });
-    let text = await resp.text();
-    const base = 'https://' + req.headers.host;
-    text = text.replace(/https?:\/\/[^\s"';,\r\n]+/g, m => base + '/stream?url=' + Buffer.from(m).toString('base64url'));
-    res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
-    res.send(text);
-  } catch(e) { res.status(500).send('#EXTM3U\n#EXTINF:-1,Error\n'); }
+    const base = 'http://4kgood.org';
+    const user = '9680723188';
+    const pass = 'kyft6ks0g7gr7uw0xio6';
+
+    // Get live streams from API
+    const resp = await fetch(`${base}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`);
+    const data = await resp.json();
+    
+    let m3u = '#EXTM3U\n';
+    
+    if (data && Array.isArray(data)) {
+      for (const ch of data) {
+        const name = (ch.name || 'Unknown').replace(/,/g, '');
+        const logo = ch.stream_icon || '';
+        const id = ch.stream_id;
+        if (!id) continue;
+        
+        m3u += `#EXTINF:-1 tvg-id="${id}" tvg-name="${name}" tvg-logo="${logo}" group-title="${ch.category_name || 'General'}",${name}\n`;
+        m3u += `${base}/live/${user}/${pass}/${id}.ts\n`;
+      }
+    }
+
+    res.setHeader('Content-Type', 'application/vnd.apple.mpegurl; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="playlist.m3u"');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.send(m3u);
+
+  } catch(e) {
+    console.error(e);
+    res.status(500).send('#EXTM3U\n#EXTINF:-1,Error fetching playlist\n');
+  }
 }
+EOF
