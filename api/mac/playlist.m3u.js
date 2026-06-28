@@ -2,9 +2,9 @@
 cat > api/mac/playlist.m3u.js << 'EOF'
 export default async function handler(req, res) {
   try {
-    const base = 'http://4kgood.org';
-    const user = '9680723188';
-    const pass = 'kyft6ks0g7gr7uw0xio6';
+    const base = 'http://fastshare1.com:8080';
+    const user = '112233';
+    const pass = '332211';
 
     // Get live streams from API
     const resp = await fetch(`${base}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`);
